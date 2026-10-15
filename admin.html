@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل ادمین — وستا دکور</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+:root {
+  --bg:#0d1b2a; --card:#112240; --card2:#0a1628;
+  --gold:#c9a84c; --gold2:#a07830; --gold3:#e8cc7a;
+  --text:#f0e6cc; --muted:#8a9bb5; --border:rgba(201,168,76,0.25);
+  --red:#e74c3c; --green:#2ecc71;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:380px;text-align:center}
+.login-logo{font-size:48px;margin-bottom:16px}
+.login-title{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
+.login-box input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--text);font-family:'Vazirmatn',sans-serif;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:var(--gold)}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;font-family:'Vazirmatn',sans-serif;cursor:pointer}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+
+/* LAYOUT */
+.admin-wrap{display:none;min-height:100vh}
+.sidebar{position:fixed;top:0;right:0;width:220px;height:100vh;background:var(--card2);border-left:1px solid var(--border);padding:20px 0;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar-logo img{width:44px;height:44px;border-radius:10px;border:1px solid var(--border)}
+.sidebar-brand{font-size:14px;font-weight:800;color:var(--gold);margin-top:8px}
+.sidebar-sub{font-size:10px;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:13px;color:var(--muted);transition:all 0.2s;border-right:3px solid transparent}
+.nav-item:hover{background:rgba(201,168,76,0.08);color:var(--text)}
+.nav-item.active{background:rgba(201,168,76,0.12);color:var(--gold);border-right-color:var(--gold)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.nav-logout{margin-top:auto;border-top:1px solid var(--border);padding-top:12px;margin-top:20px}
+
+.main{margin-right:220px;padding:24px;min-height:100vh}
+.page-title{font-size:22px;font-weight:900;color:var(--gold);margin-bottom:6px}
+.page-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.stat-num{font-size:26px;font-weight:900;color:var(--gold)}
+.stat-label{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.table-header h3{font-size:15px;font-weight:700;color:var(--text)}
+.btn{padding:8px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;font-family:'Vazirmatn',sans-serif;cursor:pointer;transition:all 0.2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-red{background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);color:var(--red)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.search-bar{padding:12px 20px;border-bottom:1px solid var(--border)}
+.search-bar input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--text);font-family:'Vazirmatn',sans-serif;outline:none}
+.search-bar input:focus{border-color:var(--gold)}
+
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.5px;background:rgba(201,168,76,0.06);border-bottom:1px solid var(--border)}
+td{padding:10px 16px;font-size:12px;color:var(--text);border-bottom:1px solid rgba(201,168,76,0.08);vertical-align:middle}
+tr:hover td{background:rgba(201,168,76,0.04)}
+.product-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--card2);border:1px solid var(--border)}
+.badge-cat{background:rgba(201,168,76,0.15);color:var(--gold);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px}
+.td-actions{display:flex;gap:6px}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;scrollbar-width:thin}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:10}
+.modal-head h3{font-size:16px;font-weight:800;color:var(--gold)}
+.modal-close{width:32px;height:32px;background:var(--card2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
+.modal-body{padding:24px}
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:0.5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);font-family:'Vazirmatn',sans-serif;outline:none;transition:border 0.2s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold)}
+.form-row textarea{resize:vertical;min-height:80px}
+.form-row select option{background:var(--card2)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.img-upload-area{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s}
+.img-upload-area:hover{border-color:var(--gold);background:rgba(201,168,76,0.05)}
+.img-upload-area input{display:none}
+.img-preview{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-top:10px;display:none}
+.tab-switcher{display:flex;gap:8px;margin-bottom:12px}
+.tab-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Vazirmatn',sans-serif;font-size:12px;cursor:pointer;transition:all 0.2s}
+.tab-btn.active{background:rgba(201,168,76,0.15);border-color:var(--gold);color:var(--gold);font-weight:700}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:var(--card)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;font-family:'Vazirmatn',sans-serif;padding:10px 24px;border-radius:20px;z-index:999;opacity:0;transition:all 0.3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CAT PAGE */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.cat-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px}
+.cat-card img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--card)}
+.cat-card-info{flex:1;min-width:0}
+.cat-card-title{font-size:13px;font-weight:700;color:var(--text)}
+.cat-card-key{font-size:10px;color:var(--muted)}
+
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative;border-left:none;border-bottom:1px solid var(--border)}
+  .main{margin-right:0}
+  .form-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">🏛</div>
+    <div class="login-title">وستا دکور</div>
+    <div class="login-sub">پنل مدیریت محصولات</div>
+    <input type="password" id="passInput" placeholder="رمز عبور" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">ورود به پنل</button>
+    <div class="login-err" id="loginErr">رمز عبور اشتباه است</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="adminWrap">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://raw.githubusercontent.com/vestadeccor/Price/main/vesta-icon-1024.png" alt="logo">
+      <div class="sidebar-brand">وستا دکور</div>
+      <div class="sidebar-sub">پنل مدیریت</div>
+    </div>
+    <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+      <span class="nav-icon">📊</span> داشبورد
+    </div>
+    <div class="nav-item" onclick="showSection('products')" id="nav-products">
+      <span class="nav-icon">📦</span> محصولات
+    </div>
+    <div class="nav-item" onclick="showSection('categories')" id="nav-categories">
+      <span class="nav-icon">🗂</span> دسته‌بندی‌ها
+    </div>
+    <div class="nav-logout">
+      <div class="nav-item" onclick="doLogout()">
+        <span class="nav-icon">🚪</span> خروج
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div id="section-dashboard">
+      <div class="page-title">داشبورد</div>
+      <div class="page-sub">خلاصه وضعیت محصولات وستا دکور</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">—</div>
+          <div class="stat-label">کل محصولات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-cats">—</div>
+          <div class="stat-label">دسته‌بندی</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-new">—</div>
+          <div class="stat-label">محصولات جدید</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="section-products" style="display:none">
+      <div class="page-title">مدیریت محصولات</div>
+      <div class="page-sub">افزودن، ویرایش و حذف محصولات</div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>لیست محصولات</h3>
+          <button class="btn btn-gold" onclick="openModal()">+ محصول جدید</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" placeholder="جستجو در محصولات..." id="searchInput" oninput="filterProducts()">
+        </div>
+        <div id="productsTable">
+          <div class="loading"><div class="spinner"></div>در حال بارگذاری...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div id="section-categories" style="display:none">
+      <div class="page-title">دسته‌بندی‌ها</div>
+      <div class="page-sub">مدیریت دسته‌بندی‌های محصولات</div>
+      <div style="margin-bottom:16px;display:flex;justify-content:flex-end">
+        <button class="btn btn-gold" onclick="openCatModal()">+ دسته جدید</button>
+      </div>
+      <div class="cat-grid" id="catGrid">
+        <div class="loading"><div class="spinner"></div>در حال بارگذاری...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-bg" id="productModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitle">محصول جدید</h3>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row">
+          <label>دسته‌بندی</label>
+          <select id="f-category">
+            <option value="foam">دیوارپوش فومی</option>
+            <option value="roli">دیوارپوش رولی</option>
+            <option value="marble">ماربل شیت</option>
+            <option value="thermowall">ترمووال</option>
+            <option value="floor">کفپوش</option>
+            <option value="lamse">لمسه</option>
+            <option value="abzar">ابزار قاب بندی</option>
+            <option value="qarniz">قرنیز</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>زیردسته</label>
+          <input type="text" id="f-subcat" placeholder="مثلاً: آجر کلاسیک">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>نام محصول</label>
+        <input type="text" id="f-name" placeholder="نام محصول را وارد کنید">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>قیمت</label>
+          <input type="text" id="f-price" placeholder="مثلاً: ۳۶۵,۰۰۰">
+        </div>
+        <div class="form-row">
+          <label>واحد</label>
+          <input type="text" id="f-unit" placeholder="مثلاً: تومان/ورق">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>توضیحات</label>
+        <textarea id="f-desc" placeholder="توضیحات محصول..."></textarea>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="form-row">
+        <label>تصویر محصول</label>
+        <div class="tab-switcher">
+          <button class="tab-btn active" onclick="setImgTab('link',this)">🔗 لینک URL</button>
+          <button class="tab-btn" onclick="setImgTab('upload',this)">📤 آپلود عکس</button>
+        </div>
+        <div id="img-link-tab">
+          <input type="text" id="f-img-url" placeholder="https://..." oninput="previewFromUrl()">
+        </div>
+        <div id="img-upload-tab" style="display:none">
+          <div class="img-upload-area" onclick="document.getElementById('f-img-file').click()">
+            <div>📁 کلیک کنید یا عکس را اینجا بکشید</div>
+            <input type="file" id="f-img-file" accept="image/*" onchange="handleImgUpload(this)">
+          </div>
+        </div>
+        <img id="f-img-preview" class="img-preview" src="" alt="">
+      </div>
+
+      <!-- SPECS -->
+      <div class="form-row">
+        <label>مشخصات فنی (هر ردیف: نام|مقدار)</label>
+        <textarea id="f-specs" placeholder="ابعاد|۷۰×۷۰&#10;جنس|فوم پشت چسبدار&#10;نصب|چسبی" style="direction:ltr"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>ویژگی‌ها (هر خط یک ویژگی)</label>
+        <textarea id="f-features" placeholder="✅ نصب آسان&#10;🔇 عایق صدا&#10;💧 ضدرطوبت"></textarea>
+      </div>
+
+      <div class="form-row" style="display:flex;align-items:center;gap:10px">
+        <input type="checkbox" id="f-isnew" style="width:auto">
+        <label for="f-isnew" style="margin:0;cursor:pointer">محصول جدید (نمایش برچسب جدید)</label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal()">انصراف</button>
+      <button class="btn btn-gold" onclick="saveProduct()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-bg" id="catModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="catModalTitle">دسته جدید</h3>
+      <div class="modal-close" onclick="closeCatModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row">
+          <label>کلید (انگلیسی)</label>
+          <input type="text" id="c-key" placeholder="foam" style="direction:ltr">
+        </div>
+        <div class="form-row">
+          <label>عنوان فارسی</label>
+          <input type="text" id="c-title" placeholder="دیوارپوش فومی">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>تصویر کاور</label>
+        <div class="tab-switcher">
+          <button class="tab-btn active" onclick="setCatImgTab('link',this)">🔗 لینک URL</button>
+          <button class="tab-btn" onclick="setCatImgTab('upload',this)">📤 آپلود عکس</button>
+        </div>
+        <div id="cat-img-link-tab">
+          <input type="text" id="c-img-url" placeholder="https://..." oninput="previewCatImg()">
+        </div>
+        <div id="cat-img-upload-tab" style="display:none">
+          <div class="img-upload-area" onclick="document.getElementById('c-img-file').click()">
+            <div>📁 کلیک کنید</div>
+            <input type="file" id="c-img-file" accept="image/*" onchange="handleCatImgUpload(this)">
+          </div>
+        </div>
+        <img id="c-img-preview" class="img-preview" src="" alt="">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>برچسب (اختیاری)</label>
+          <input type="text" id="c-badge" placeholder="پرفروش ✨">
+        </div>
+        <div class="form-row">
+          <label>ترتیب نمایش</label>
+          <input type="number" id="c-sort" placeholder="0" style="direction:ltr">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeCatModal()">انصراف</button>
+      <button class="btn btn-gold" onclick="saveCat()">💾 ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://yajgdlprfblqvjufvuig.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhamdkbHByZmJscXZqdWZ2dWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3OTMwNTUsImV4cCI6MjEwNzM2OTA1NX0.9i3aEeEEcKFFNbajNwsHCp0S1tSVb_NIyasg1mdN5Q0';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ADMIN_PASS = 'vesta1403';
+let allProducts = [];
+let editingId = null;
+let editingCatId = null;
+let currentImgFinal = '';
+let currentCatImgFinal = '';
+
+// ── AUTH ──────────────────────────────────────
+function doLogin() {
+  const pass = document.getElementById('passInput').value;
+  if (pass === ADMIN_PASS) {
+    localStorage.setItem('vesta_admin', '1');
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('adminWrap').style.display = 'flex';
+    loadDashboard();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+function doLogout() {
+  localStorage.removeItem('vesta_admin');
+  location.reload();
+}
+if (localStorage.getItem('vesta_admin') === '1') {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('adminWrap').style.display = 'flex';
+  loadDashboard();
+}
+
+// ── NAVIGATION ────────────────────────────────
+function showSection(name) {
+  ['dashboard','products','categories'].forEach(s => {
+    document.getElementById('section-'+s).style.display = s === name ? 'block' : 'none';
+    document.getElementById('nav-'+s).classList.toggle('active', s === name);
+  });
+  if (name === 'products') loadProducts();
+  if (name === 'categories') loadCategories();
+  if (name === 'dashboard') loadDashboard();
+}
+
+// ── DASHBOARD ────────────────────────────────
+async function loadDashboard() {
+  const { data: prods } = await sb.from('products').select('id,is_new');
+  const { data: cats } = await sb.from('categories').select('id');
+  document.getElementById('stat-total').textContent = prods ? prods.length : 0;
+  document.getElementById('stat-cats').textContent = cats ? cats.length : 0;
+  document.getElementById('stat-new').textContent = prods ? prods.filter(p => p.is_new).length : 0;
+}
+
+// ── PRODUCTS ─────────────────────────────────
+async function loadProducts() {
+  document.getElementById('productsTable').innerHTML = '<div class="loading"><div class="spinner"></div>در حال بارگذاری...</div>';
+  const { data, error } = await sb.from('products').select('*').order('sort_order');
+  if (error) { showToast('خطا در بارگذاری', 'error'); return; }
+  allProducts = data || [];
+  renderTable(allProducts);
+}
+
+function renderTable(list) {
+  if (!list.length) {
+    document.getElementById('productsTable').innerHTML = '<div class="loading">محصولی یافت نشد</div>';
+    return;
+  }
+  document.getElementById('productsTable').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>تصویر</th><th>نام</th><th>دسته</th><th>قیمت</th><th>زیردسته</th><th>عملیات</th>
+      </tr></thead>
+      <tbody>
+        ${list.map(p => `
+          <tr>
+            <td><img class="product-img" src="${p.img||''}" onerror="this.style.display='none'" alt=""></td>
+            <td>${p.name||'—'} ${p.is_new ? '<span style="color:var(--gold);font-size:10px">🆕</span>' : ''}</td>
+            <td><span class="badge-cat">${p.category||'—'}</span></td>
+            <td style="color:var(--gold);font-weight:700">${p.price||'—'}</td>
+            <td>${p.subcat||'—'}</td>
+            <td><div class="td-actions">
+              <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')">✏️ ویرایش</button>
+              <button class="btn btn-red btn-sm" onclick="deleteProduct('${p.id}')">🗑</button>
+            </div></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function filterProducts() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderTable(allProducts.filter(p =>
+    (p.name||'').toLowerCase().includes(q) ||
+    (p.category||'').includes(q) ||
+    (p.subcat||'').includes(q)
+  ));
+}
+
+// ── MODAL ─────────────────────────────────────
+function openModal(id) {
+  editingId = id || null;
+  currentImgFinal = '';
+  document.getElementById('modalTitle').textContent = id ? 'ویرایش محصول' : 'محصول جدید';
+  ['f-name','f-subcat','f-price','f-unit','f-desc','f-img-url','f-specs','f-features'].forEach(k => {
+    document.getElementById(k).value = '';
+  });
+  document.getElementById('f-isnew').checked = false;
+  document.getElementById('f-img-preview').style.display = 'none';
+
+  if (id) {
+    const p = allProducts.find(x => x.id === id);
+    if (p) {
+      document.getElementById('f-category').value = p.category || 'foam';
+      document.getElementById('f-name').value = p.name || '';
+      document.getElementById('f-subcat').value = p.subcat || '';
+      document.getElementById('f-price').value = p.price || '';
+      document.getElementById('f-unit').value = p.unit || '';
+      document.getElementById('f-desc').value = p.description || '';
+      document.getElementById('f-img-url').value = p.img || '';
+      document.getElementById('f-isnew').checked = p.is_new || false;
+      currentImgFinal = p.img || '';
+      if (p.img) {
+        document.getElementById('f-img-preview').src = p.img;
+        document.getElementById('f-img-preview').style.display = 'block';
+      }
+      if (p.specs && Array.isArray(p.specs)) {
+        document.getElementById('f-specs').value = p.specs.map(s => `${s.l}|${s.v}`).join('\n');
+      }
+      if (p.features && Array.isArray(p.features)) {
+        document.getElementById('f-features').value = p.features.join('\n');
+      }
+    }
+  }
+  document.getElementById('productModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('open');
+  editingId = null;
+}
+
+async function saveProduct() {
+  const imgUrl = document.getElementById('f-img-url').value.trim();
+  const finalImg = currentImgFinal || imgUrl;
+
+  const specsRaw = document.getElementById('f-specs').value.trim();
+  const specs = specsRaw ? specsRaw.split('\n').filter(Boolean).map(line => {
+    const [l, v] = line.split('|');
+    return { l: (l||'').trim(), v: (v||'').trim() };
+  }) : [];
+
+  const featRaw = document.getElementById('f-features').value.trim();
+  const features = featRaw ? featRaw.split('\n').filter(Boolean) : [];
+
+  const payload = {
+    category: document.getElementById('f-category').value,
+    name: document.getElementById('f-name').value.trim(),
+    subcat: document.getElementById('f-subcat').value.trim(),
+    price: document.getElementById('f-price').value.trim(),
+    unit: document.getElementById('f-unit').value.trim(),
+    description: document.getElementById('f-desc').value.trim(),
+    img: finalImg,
+    specs,
+    features,
+    is_new: document.getElementById('f-isnew').checked,
+  };
+
+  let error;
+  if (editingId) {
+    ({ error } = await sb.from('products').update(payload).eq('id', editingId));
+  } else {
+    ({ error } = await sb.from('products').insert(payload));
+  }
+
+  if (error) { showToast('خطا در ذخیره: ' + error.message, 'error'); return; }
+  showToast(editingId ? 'محصول ویرایش شد ✅' : 'محصول اضافه شد ✅', 'success');
+  closeModal();
+  loadProducts();
+  loadDashboard();
+}
+
+async function editProduct(id) { openModal(id); }
+
+async function deleteProduct(id) {
+  if (!confirm('حذف این محصول؟')) return;
+  const { error } = await sb.from('products').delete().eq('id', id);
+  if (error) { showToast('خطا در حذف', 'error'); return; }
+  showToast('محصول حذف شد', 'success');
+  loadProducts();
+  loadDashboard();
+}
+
+// ── IMAGE HANDLING ────────────────────────────
+function setImgTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('img-link-tab').style.display = tab === 'link' ? 'block' : 'none';
+  document.getElementById('img-upload-tab').style.display = tab === 'upload' ? 'block' : 'none';
+}
+
+function previewFromUrl() {
+  const url = document.getElementById('f-img-url').value.trim();
+  const prev = document.getElementById('f-img-preview');
+  if (url) { prev.src = url; prev.style.display = 'block'; currentImgFinal = url; }
+  else { prev.style.display = 'none'; }
+}
+
+async function handleImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  showToast('در حال آپلود...', '');
+  const ext = file.name.split('.').pop();
+  const path = `products/${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('product-images').upload(path, file, { upsert: true });
+  if (error) { showToast('خطا در آپلود: ' + error.message, 'error'); return; }
+  const { data } = sb.storage.from('product-images').getPublicUrl(path);
+  currentImgFinal = data.publicUrl;
+  const prev = document.getElementById('f-img-preview');
+  prev.src = currentImgFinal;
+  prev.style.display = 'block';
+  showToast('عکس آپلود شد ✅', 'success');
+}
+
+// ── CATEGORIES ────────────────────────────────
+async function loadCategories() {
+  document.getElementById('catGrid').innerHTML = '<div class="loading"><div class="spinner"></div>در حال بارگذاری...</div>';
+  const { data } = await sb.from('categories').select('*').order('sort_order');
+  if (!data || !data.length) {
+    document.getElementById('catGrid').innerHTML = '<div class="loading">دسته‌ای یافت نشد</div>';
+    return;
+  }
+  document.getElementById('catGrid').innerHTML = data.map(cat => `
+    <div class="cat-card">
+      <img src="${cat.cover_img||''}" onerror="this.style.display='none'" alt="">
+      <div class="cat-card-info">
+        <div class="cat-card-title">${cat.title||'—'}</div>
+        <div class="cat-card-key">${cat.key}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="editCat('${cat.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="deleteCat('${cat.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+  window._cats = data;
+}
+
+function openCatModal(id) {
+  editingCatId = id || null;
+  currentCatImgFinal = '';
+  document.getElementById('catModalTitle').textContent = id ? 'ویرایش دسته' : 'دسته جدید';
+  ['c-key','c-title','c-img-url','c-badge'].forEach(k => document.getElementById(k).value = '');
+  document.getElementById('c-sort').value = 0;
+  document.getElementById('c-img-preview').style.display = 'none';
+  if (id && window._cats) {
+    const cat = window._cats.find(x => x.id === id);
+    if (cat) {
+      document.getElementById('c-key').value = cat.key || '';
+      document.getElementById('c-title').value = cat.title || '';
+      document.getElementById('c-img-url').value = cat.cover_img || '';
+      document.getElementById('c-badge').value = cat.badge || '';
+      document.getElementById('c-sort').value = cat.sort_order || 0;
+      currentCatImgFinal = cat.cover_img || '';
+      if (cat.cover_img) {
+        document.getElementById('c-img-preview').src = cat.cover_img;
+        document.getElementById('c-img-preview').style.display = 'block';
+      }
+    }
+  }
+  document.getElementById('catModal').classList.add('open');
+}
+
+function closeCatModal() {
+  document.getElementById('catModal').classList.remove('open');
+  editingCatId = null;
+}
+
+function setCatImgTab(tab, btn) {
+  document.querySelectorAll('#catModal .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cat-img-link-tab').style.display = tab === 'link' ? 'block' : 'none';
+  document.getElementById('cat-img-upload-tab').style.display = tab === 'upload' ? 'block' : 'none';
+}
+
+function previewCatImg() {
+  const url = document.getElementById('c-img-url').value.trim();
+  const prev = document.getElementById('c-img-preview');
+  if (url) { prev.src = url; prev.style.display = 'block'; currentCatImgFinal = url; }
+  else prev.style.display = 'none';
+}
+
+async function handleCatImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  showToast('در حال آپلود...', '');
+  const ext = file.name.split('.').pop();
+  const path = `categories/${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('product-images').upload(path, file, { upsert: true });
+  if (error) { showToast('خطا در آپلود: ' + error.message, 'error'); return; }
+  const { data } = sb.storage.from('product-images').getPublicUrl(path);
+  currentCatImgFinal = data.publicUrl;
+  const prev = document.getElementById('c-img-preview');
+  prev.src = currentCatImgFinal;
+  prev.style.display = 'block';
+  showToast('عکس آپلود شد ✅', 'success');
+}
+
+async function saveCat() {
+  const imgUrl = document.getElementById('c-img-url').value.trim();
+  const payload = {
+    key: document.getElementById('c-key').value.trim(),
+    title: document.getElementById('c-title').value.trim(),
+    cover_img: currentCatImgFinal || imgUrl,
+    badge: document.getElementById('c-badge').value.trim(),
+    sort_order: parseInt(document.getElementById('c-sort').value) || 0,
+  };
+  let error;
+  if (editingCatId) {
+    ({ error } = await sb.from('categories').update(payload).eq('id', editingCatId));
+  } else {
+    ({ error } = await sb.from('categories').insert(payload));
+  }
+  if (error) { showToast('خطا: ' + error.message, 'error'); return; }
+  showToast('دسته ذخیره شد ✅', 'success');
+  closeCatModal();
+  loadCategories();
+}
+
+async function editCat(id) { openCatModal(id); }
+
+async function deleteCat(id) {
+  if (!confirm('حذف این دسته؟')) return;
+  const { error } = await sb.from('categories').delete().eq('id', id);
+  if (error) { showToast('خطا در حذف', 'error'); return; }
+  showToast('دسته حذف شد', 'success');
+  loadCategories();
+}
+
+// ── TOAST ─────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = 'toast', 2800);
+}
+</script>
+</body>
+</html>
